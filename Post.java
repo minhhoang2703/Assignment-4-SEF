@@ -107,28 +107,14 @@ public class Post {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("comment.txt", true))) {
             writer.write(String.valueOf(postId));
             writer.newLine();
-            writer.write(comment);
-            writer.newLine();
-            writer.write(String.valueOf(postComments.size()));
-            writer.newLine();
-            writer.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
         }
-
-        // Add comment to post comments list
-        postComments.add(comment);
-
-        return true;
     }
-
-    
 }
+
+
     public static void main(String[] args) {
         // Create a new Post object
         Post post = new Post(1, "Example Post", "This is an example post body.", new ArrayList<String>(){{add("tag1"); add("tag2");}}, "Difficult", "Immediately Needed");
-
         // Add comments to the post
         post.addComment("This is the first comment.");
         post.addComment("This is the second comment.");
@@ -142,3 +128,4 @@ public class Post {
         System.out.println("Post Emergency: " + post.getPostEmergency());
         System.out.println("Post Comments: " + post.getPostComments());
     }
+
