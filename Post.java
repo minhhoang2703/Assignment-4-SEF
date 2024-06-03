@@ -1,131 +1,105 @@
-import java.util.ArrayList;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class Post {
-    private int postId;
+    private int postID;
     private String postTitle;
     private String postBody;
-    private ArrayList<String> postTags;
-    private String postDifficulty;
-    private String postEmergency;
-    private ArrayList<String> postComments;
+    private String[] postTags;
+    private String[] postTypes = {"Very Difficult", "Difficult", "Easy"};
+    private String[] postEmergency = {"Immediately Needed", "Highly Needed", "Ordinary"};
+    private ArrayList<String> postComments = new ArrayList<>();
 
-    public Post(int postId, String postTitle, String postBody, ArrayList<String> postTags, String postDifficulty, String postEmergency) {
-        this.postId = postId;
-        this.postTitle = postTitle;
-        this.postBody = postBody;
-        this.postTags = postTags;
-        this.postDifficulty = postDifficulty;
-        this.postEmergency = postEmergency;
-        this.postComments = new ArrayList<>();
-    }
-
-    public int getPostId() {
-        return postId;
-    }
-
-    public String getPostTitle() {
-        return postTitle;
-    }
-
-    public String getPostBody() {
-        return postBody;
-    }
-
-    public ArrayList<String> getPostTags() {
-        return postTags;
-    }
-
-    public String getPostDifficulty() {
-        return postDifficulty;
-    }
-
-    public String getPostEmergency() {
-        return postEmergency;
-    }
-
-    public ArrayList<String> getPostComments() {
-        return postComments;
-    }
-
-    public boolean isValidPost() {
-        // Check condition 1: title length
-        if (postTitle.length() < 10 || postTitle.length() > 250 || !Character.isLetter(postTitle.charAt(0))) {
+    public boolean addPost() {
+        // Condition 1: Check post title length and first five characters
+        if (postTitle.length() < 10 || postTitle.length() > 250 || !Pattern.matches("[a-zA-Z ]{5}.*", postTitle)) {
             return false;
         }
 
-        // Check condition 2: body length
+        // Condition 2: Check post body length
         if (postBody.length() < 250) {
             return false;
         }
 
-        // Check condition 3: tag count and format
-        if (postTags.size() < 2 || postTags.size() > 5) {
+        // Condition 3: Check post tags
+        if (postTags.length < 2 || postTags.length > 5) {
             return false;
         }
         for (String tag : postTags) {
-            if (tag.length() < 2 || tag.length() > 10 || Character.isUpperCase(tag.charAt(0))) {
+            if (tag.length() < 2 || tag.length() > 10 || !tag.equals(tag.toLowerCase())) {
                 return false;
             }
         }
 
-        // Check condition 4: difficulty
-        if (postDifficulty.equals("Very Difficult") || postDifficulty.equals("Difficult")) {
-            if (postBody.length() < 300) {
-                return false;
-            }
-        } else if (postDifficulty.equals("Easy") && postTags.size() > 3) {
+        // Condition 4: Check post types and body length
+        if (("Easy".equals(postTypes[postID]) && postTags.length > 3) || (("Very Difficult".equals(postTypes[postID]) || "Difficult".equals(postTypes[postID])) && postBody.length() < 300)) {
             return false;
         }
 
-        // Check condition 5: emergency status
-        if ((postDifficulty.equals("Easy") && (postEmergency.equals("Immediately Needed") || postEmergency.equals("Highly Needed"))) ||
-                (postDifficulty.equals("Very Difficult") || postDifficulty.equals("Difficult")) && !postEmergency.equals("Ordinary")) {
+        // Condition 5: Check post emergency
+        if (("Easy".equals(postTypes[postID]) && ("Immediately Needed".equals(postEmergency[postID]) || "Highly Needed".equals(postEmergency[postID]))) || (("Very Difficult".equals(postTypes[postID]) || "Difficult".equals(postTypes[postID])) && "Ordinary".equals(postEmergency[postID]))) {
             return false;
         }
 
-        return true;
-    }
-    public boolean addComment(String comment) {
-        // Check condition 1: comment text length
-        String[] words = comment.split("\\s+");
-        if (words.length < 4 || words.length > 10 || !Character.isUpperCase(words[0].charAt(0))) {
+        // If all conditions are met, write to file
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("post.txt", true));
+            writer.write("Post ID: " + postID + "\n");
+            writer.write("Post Title: " + postTitle + "\n");
+            writer.write("Post Body: " + postBody + "\n");
+            writer.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
             return false;
-        }
-
-        // Check condition 2: comment count for easy and ordinary posts
-        if ((postDifficulty.equals("Easy") || postEmergency.equals("Ordinary")) && postComments.size() >= 3) {
-            return false;
-        }
-
-        // Add comment to file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("comment.txt", true))) {
-            writer.write(String.valueOf(postId));
-            writer.newLine();
         }
     }
-}
-
-
+    public boolean addComment(String comment){
+        String [] words = comment.split("\\s+");
+        if (words.length < 4 || words.length > 10 || !Character.isUpperCase(words[0].charAt(0))){
+            return false;
+        }
+        if (postComments.size() >= 5 || (("Easy".equals(postTypes[postID]) || "Ordinary".equals(postEmergency[postID])) && postComments.size() >= 3)) {
+            return false;
+        }
+        postComments.add(comment);
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("comment.txt", true));
+            writer.write("Post ID: " + postID + ", Comment: " + comment + "\n");
+            writer.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     public static void main(String[] args) {
         // Create a new Post object
-        Post post = new Post(1, "Example Post", "This is an example post body.", new ArrayList<String>(){{add("tag1"); add("tag2");}}, "Difficult", "Immediately Needed");
-        // Add comments to the post
-        post.addComment("This is the first comment.");
-        post.addComment("This is the second comment.");
+        Post post = new Post();
+    
+        // Set the post details
+        post.postID = 1;
+        post.postTitle = "This is a valid post title";
+        post.postBody = "Life is like a journey on a train with its stations, with changes of routes and with accidents! At birth, we boarded the train and met our parents, and we believe they will always travel on our side. However, at some station our parents will step down from the train, leaving us on this journey alone.";
+        post.postTags = new String[]{"tag1", "tag2", "tag3"};
+        post.postTypes[post.postID] = "Difficult";
+        post.postEmergency[post.postID] = "Immediately Needed";
+    
+        // Call the addPost method and print the result
+        boolean result = post.addPost();
+        System.out.println("Result of addPost: " + result);
 
-        // Print the post information
-        System.out.println("Post ID: " + post.getPostId());
-        System.out.println("Post Title: " + post.getPostTitle());
-        System.out.println("Post Body: " + post.getPostBody());
-        System.out.println("Post Tags: " + post.getPostTags());
-        System.out.println("Post Difficulty: " + post.getPostDifficulty());
-        System.out.println("Post Emergency: " + post.getPostEmergency());
-        System.out.println("Post Comments: " + post.getPostComments());
+            // Add comments and print the result
+    String[] comments = {"This is a valid comment.", "Another valid comment.", "Yet another valid comment."};
+    for (String comment : comments) {
+        boolean addCommentResult = post.addComment(comment);
+        System.out.println("Result of addComment: " + addCommentResult);
     }
+    }
+    
+}
+
 
