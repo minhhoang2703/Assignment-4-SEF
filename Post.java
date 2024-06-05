@@ -99,6 +99,62 @@ public class Post {
         System.out.println("Result of addComment: " + addCommentResult);
     }
     }
+    public int getPostID() {
+        return postID;
+    }
+
+    public void setPostID(int postID) {
+        this.postID = postID;
+    }
+
+    public String getPostTitle() {
+        return postTitle;
+    }
+
+    public void setPostTitle(String postTitle) {
+        this.postTitle = postTitle;
+    }
+
+    public String getPostBody() {
+        return postBody;
+    }
+
+    public void setPostBody(String postBody) {
+        this.postBody = postBody;
+    }
+
+    public String[] getPostTags() {
+        return postTags;
+    }
+
+    public void setPostTags(String[] postTags) {
+        this.postTags = postTags;
+    }
+
+    public String[] getPostTypes() {
+        return postTypes;
+    }
+
+    public void setPostTypes(String[] postTypes) {
+        this.postTypes = postTypes;
+    }
+
+    public String[] getPostEmergency() {
+        return postEmergency;
+    }
+
+    public void setPostEmergency(String[] postEmergency) {
+        this.postEmergency = postEmergency;
+    }
+
+    public ArrayList<String> getPostComments() {
+        return postComments;
+    }
+
+    public void setPostComments(ArrayList<String> postComments) {
+        this.postComments = postComments;
+    }
+
     
 }
 
