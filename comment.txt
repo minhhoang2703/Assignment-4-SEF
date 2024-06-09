@@ -1,4 +1,2 @@
-Post ID: 1, Comment: This is a valid comment.
-Post ID: 1, Comment: Yet another valid comment.
-Post ID: 1, Comment: This is a valid comment.
-Post ID: 1, Comment: Yet another valid comment.
+
+Post ID: 1, Comment: Why we ask about a goat.
